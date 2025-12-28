@@ -1,10 +1,6 @@
-import React, { useState, useEffect } from "react"; // <-- ДОДАНО: useEffect
+import React, { useState, useEffect } from "react"; 
 import { Home, BookOpen, Briefcase, Users, User, ArrowLeft } from "lucide-react";
-
-// Components
 import ScreenNav from "./components/ScreenNav";
-
-// Screens
 import SplashScreen from "./pages/SplashScreen";
 import OnboardingScreen from "./pages/OnboardingScreen";
 import ResumeAnalysisScreen from "./pages/ResumeAnalysisScreen";
@@ -17,15 +13,8 @@ import CommunityScreen from "./pages/CommunityScreen";
 import ProfileScreen from "./pages/ProfileScreen";
 import AchievementsScreen from "./pages/AchievementsScreen";
 
-/**
- * CareerPlatformDesign.jsx
- * Головний компонент з логікою стану та перемиканням екранів.
- */
-
 const CareerPlatformDesign = () => {
   const [activeScreen, setActiveScreen] = useState("splash");
-
-  // --- Global State ---
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [profile] = useState({
     name: "Alex Johnson",
@@ -42,13 +31,17 @@ const CareerPlatformDesign = () => {
     { id: 2, title: "100% Course Completion", date: "2025-07-21", icon: ArrowLeft },
     { id: 3, title: "Streak: 30 days", date: "2025-10-01", icon: ArrowLeft },
   ]);
-
+  
   // Данні для Dashboard/LearningPath
   const learningCourses = [
     { id: "c1", title: "React Hooks Deep Dive", progress: 75, modules: 8, time: "4h", color: "from-indigo-500 to-purple-500" },
     { id: "c2", title: "TypeScript for JS Devs", progress: 40, modules: 6, time: "6h", color: "from-green-400 to-teal-500" },
     { id: "c3", title: "Node.js & Express", progress: 20, modules: 5, time: "5h", color: "from-yellow-400 to-orange-400" },
   ];
+
+  useEffect(() => {
+  
+  }, [profile])
 
   // =========================================================================
   // 🚀 ОНОВЛЕНА ЛОГІКА: Перемикання екранів з підтримкою History API
