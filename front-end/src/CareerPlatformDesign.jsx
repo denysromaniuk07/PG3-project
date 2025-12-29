@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react"; // <-- ДОДАНО: useEffect
+import React, { useState } from "react";
+import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { Home, BookOpen, Briefcase, Users, User, ArrowLeft } from "lucide-react";
 
 // Components
@@ -23,7 +24,8 @@ import AchievementsScreen from "./pages/AchievementsScreen";
  */
 
 const CareerPlatformDesign = () => {
-  const [activeScreen, setActiveScreen] = useState("splash");
+  const navigate = useNavigate();
+  const location = useLocation();
 
   // --- Global State ---
   const [selectedCourse, setSelectedCourse] = useState(null);
@@ -50,64 +52,27 @@ const CareerPlatformDesign = () => {
     { id: "c3", title: "Node.js & Express", progress: 20, modules: 5, time: "5h", color: "from-yellow-400 to-orange-400" },
   ];
 
-  // =========================================================================
-  // 🚀 ОНОВЛЕНА ЛОГІКА: Перемикання екранів з підтримкою History API
-  // =========================================================================
+  // Determine active screen from URL for navigation highlighting
+  const getActiveScreen = () => {
+    const path = location.pathname.substring(1); // remove leading /
+    if (path === "") return "splash";
+    return path;
+  };
 
-  // Utility: перемикання екранів (МОДИФІКОВАНО)
+  const activeScreen = getActiveScreen();
+
+  // Helper for backward compatibility with existing components calling goTo('screenName')
   const goTo = (screen, opts = {}) => {
     if (opts.course) setSelectedCourse(opts.course);
 
-    // Використовуємо pushState для додавання нового запису в історію.
-    // Використовуємо replaceState, якщо переходимо на той самий екран, щоб уникнути дублікатів.
-    const historyMethod = (screen === activeScreen && window.location.search.includes(`?screen=${screen}`))
-      ? 'replaceState'
-      : 'pushState';
-
-    // Оновлюємо URL-адресу без перезавантаження
-    window.history[historyMethod]({ screen }, '', `?screen=${screen}`);
-
-    // Оновлюємо стан React
-    setActiveScreen(screen);
-    window.scrollTo?.(0, 0);
-  };
-
-  // Ефект для прослуховування кнопки "Назад" у браузері
-  useEffect(() => {
-    // Обробник події 'popstate' (викликається при натисканні 'Назад' або 'Вперед')
-    const handlePopState = (event) => {
-      // Отримуємо екран зі стану історії або з URL
-      const stateScreen = event.state?.screen;
-      const urlParams = new URLSearchParams(window.location.search);
-      const urlScreen = urlParams.get('screen');
-
-      // Встановлюємо новий активний екран
-      const newScreen = stateScreen || urlScreen || "splash";
-      setActiveScreen(newScreen);
-      window.scrollTo?.(0, 0);
-    };
-
-    // Слухаємо подію 'popstate'
-    window.addEventListener('popstate', handlePopState);
-
-    // Ініціалізація: читаємо поточний URL при першому завантаженні (наприклад, якщо користувач оновив сторінку)
-    const initialUrlParams = new URLSearchParams(window.location.search);
-    const urlScreen = initialUrlParams.get('screen');
-
-    if (urlScreen) {
-      // Якщо в URL є екран, встановлюємо його як початковий стан історії
-      setActiveScreen(urlScreen);
-      window.history.replaceState({ screen: urlScreen }, '', `?screen=${urlScreen}`);
+    if (screen === 'splash') {
+      navigate('/');
     } else {
-      // Якщо URL порожній, ініціалізуємо його як 'splash', щоб почати відлік історії
-      window.history.replaceState({ screen: "splash" }, '', `?screen=splash`);
+      navigate(`/${screen}`);
     }
 
-    // Прибираємо слухача при демонтажі компонента
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-    };
-  }, []); // Пустий масив залежностей: запускається лише один раз
+    window.scrollTo(0, 0);
+  };
 
   // =========================================================================
   // ⚛️ РЕНДЕР (Render)
@@ -119,17 +84,21 @@ const CareerPlatformDesign = () => {
       <ScreenNav activeScreen={activeScreen} goTo={goTo} />
 
       {/* screens (також імпортуються як окремі файли) */}
-      {activeScreen === "splash" && <SplashScreen goTo={goTo} />}
-      {activeScreen === "onboarding" && <OnboardingScreen goTo={goTo} />}
-      {activeScreen === "resume-analysis" && <ResumeAnalysisScreen goTo={goTo} />}
-      {activeScreen === "dashboard" && <DashboardScreen goTo={goTo} profile={profile} learningCourses={learningCourses} />}
-      {activeScreen === "learning-path" && <LearningPathScreen goTo={goTo} />}
-      {activeScreen === "course-detail" && <CourseDetailScreen goTo={goTo} selectedCourse={selectedCourse} />}
-      {activeScreen === "projects" && <ProjectsScreen goTo={goTo} />}
-      {activeScreen === "opportunities" && <OpportunitiesScreen goTo={goTo} />}
-      {activeScreen === "community" && <CommunityScreen goTo={goTo} />}
-      {activeScreen === "profile" && <ProfileScreen goTo={goTo} initialProfile={profile} />}
-      {activeScreen === "achievements" && <AchievementsScreen goTo={goTo} achievements={achievements} />}
+      <Routes>
+        <Route path="/" element={<SplashScreen goTo={goTo} />} />
+        <Route path="/splash" element={<Navigate to="/" replace />} />
+        <Route path="/onboarding" element={<OnboardingScreen goTo={goTo} />} />
+        <Route path="/resume-analysis" element={<ResumeAnalysisScreen goTo={goTo} />} />
+        <Route path="/dashboard" element={<DashboardScreen goTo={goTo} profile={profile} learningCourses={learningCourses} />} />
+        <Route path="/learning-path" element={<LearningPathScreen goTo={goTo} />} />
+        <Route path="/course-detail" element={<CourseDetailScreen goTo={goTo} selectedCourse={selectedCourse} />} />
+        <Route path="/projects" element={<ProjectsScreen goTo={goTo} />} />
+        <Route path="/opportunities" element={<OpportunitiesScreen goTo={goTo} />} />
+        <Route path="/community" element={<CommunityScreen goTo={goTo} />} />
+        <Route path="/profile" element={<ProfileScreen goTo={goTo} initialProfile={profile} />} />
+        <Route path="/achievements" element={<AchievementsScreen goTo={goTo} achievements={achievements} />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
 
       {/* bottom nav for small screens - ENHANCED */}
       <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t-2 border-gray-200 p-4 shadow-2xl md:hidden z-40">
@@ -145,8 +114,8 @@ const CareerPlatformDesign = () => {
               key={i}
               onClick={() => goTo(it.screen)}
               className={`flex flex-col items-center text-xs font-semibold transition-all ${activeScreen === it.screen
-                  ? "text-indigo-600 scale-110"
-                  : "text-gray-600 hover:text-indigo-500 hover:scale-105"
+                ? "text-indigo-600 scale-110"
+                : "text-gray-600 hover:text-indigo-500 hover:scale-105"
                 }`}
             >
               <div className={`w-7 h-7 mb-1 transition-all ${activeScreen === it.screen ? "text-indigo-600" : ""
