@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-+($uxu2fk=&$+u#+5=u*vqcnixxhb#)fjp!txps)%y@l41+@xa
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
 
 # Application definition
@@ -70,6 +70,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
+# Custom User Model
+AUTH_USER_MODEL = 'api.User'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
