@@ -45,14 +45,36 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    # Security & CORS
     'django.middleware.security.SecurityMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    
+    # Standard Django middleware
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
+    # Custom authentication middleware
+    'middleware.auth_middleware.JWTAuthenticationMiddleware',
+    'middleware.auth_middleware.UserContextMiddleware',
+    'middleware.auth_middleware.TokenBlacklistMiddleware',
+    
+    # Custom error handling & security
+    'middleware.error_handler.ExceptionHandlerMiddleware',
+    'middleware.error_handler.SecurityHeadersMiddleware',
+    'middleware.error_handler.RequestResponseLoggingMiddleware',
+    
+    # Analytics & monitoring
+    'middleware.analytics_middleware.AnalyticsMiddleware',
+    'middleware.analytics_middleware.UserActivityMiddleware',
+    'middleware.analytics_middleware.PerformanceMonitoringMiddleware',
+    
+    # Rate limiting
+    'middleware.rate_limiting_middleware.IPWhitelistMiddleware',
+    'middleware.rate_limiting_middleware.RateLimitMiddleware',
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -163,4 +185,72 @@ REST_FRAMEWORK = {
         'anon': '100/hour',
         'user': '1000/hour'
     }
+}
+# Rate Limiting Configuration
+RATE_LIMIT_SETTINGS = {
+    'AUTHENTICATED_REQUESTS_PER_HOUR': 1000,
+    'ANONYMOUS_REQUESTS_PER_HOUR': 100,
+    'BURST_SIZE': 20,  # Requests per minute
+    'BURST_WINDOW': 60,  # Seconds
+}
+
+# IP Whitelist for rate limiting bypass
+RATE_LIMIT_WHITELIST = [
+    '127.0.0.1',
+    '::1',
+    'localhost',
+]
+
+# Logging Configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': 'logs/django.log',
+            'maxBytes': 1024 * 1024 * 10,  # 10MB
+            'backupCount': 5,
+            'formatter': 'verbose',
+        },
+        'error_file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': 'logs/errors.log',
+            'maxBytes': 1024 * 1024 * 10,  # 10MB
+            'backupCount': 5,
+            'formatter': 'verbose',
+            'level': 'ERROR',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['console', 'error_file'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'middleware': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
 }
