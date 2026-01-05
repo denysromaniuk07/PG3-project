@@ -1,41 +1,43 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.utils import timezone
 
-# Extended User Model
+
+# ==================== EXTENDED USER MODEL ====================
 class User(AbstractUser):
-    """Extended user model with career platform fields"""
-    groups = models.ManyToManyField(
-        'auth.Group',
-        related_name='api_user_set',
-        blank=True,
-        help_text='The groups this user belongs to.',
-        verbose_name='groups'
-    )
-    user_permissions = models.ManyToManyField(
-        'auth.Permission',
-        related_name='api_user_set',
-        blank=True,
-        help_text='Specific permissions for this user.',
-        verbose_name='user permissions'
-    )
+    """Extended User model with career-related fields"""
+    TITLE_CHOICES = [
+        ('student', 'Student'),
+        ('junior', 'Junior Developer'),
+        ('mid-level', 'Mid-Level Developer'),
+        ('senior', 'Senior Developer'),
+        ('lead', 'Lead Developer'),
+        ('manager', 'Engineering Manager'),
+        ('other', 'Other'),
+    ]
     
-    title = models.CharField(max_length=100, blank=True)
-    location = models.CharField(max_length=150, blank=True)
-    bio = models.TextField(blank=True)
+    profile_picture = models.ImageField(upload_to='avatars/', null=True, blank=True)
+    bio = models.TextField(blank=True, max_length=500)
+    title = models.CharField(max_length=20, choices=TITLE_CHOICES, default='student')
+    location = models.CharField(max_length=100, blank=True)
+    website = models.URLField(blank=True)
     github_url = models.URLField(blank=True)
     linkedin_url = models.URLField(blank=True)
-    telegram_url = models.URLField(blank=True)
-    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
-    total_points = models.IntegerField(default=0)
+    twitter_url = models.URLField(blank=True)
+    
+    points = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+    is_mentor = models.BooleanField(default=False)
+    is_premium = models.BooleanField(default=False)
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
+    
     class Meta:
         ordering = ['-created_at']
-
+    
     def __str__(self):
-        return f"{self.first_name} {self.last_name}" if self.first_name else self.username
+        return self.get_full_name() or self.username
 
 
 # Skill Model
@@ -448,6 +450,51 @@ class ResumeAnalysis(models.Model):
 
     def __str__(self):
         return f"Resume Analysis - {self.user.username}"
+
+
+# Resume Upload Model
+class Resume(models.Model):
+    """Store user uploaded resumes"""
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='resume', null=True, blank=True)
+    file = models.FileField(upload_to='resumes/')
+    original_filename = models.CharField(max_length=255, blank=True)
+    file_size = models.IntegerField(default=0)  # in bytes
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    # ML Analysis fields
+    extracted_text = models.TextField(blank=True, default='')
+    skills = models.JSONField(default=list, blank=True)
+    skill_gaps = models.JSONField(default=list, blank=True)
+    experience_level = models.CharField(
+        max_length=50,
+        choices=[
+            ('entry-level', 'Entry-level'),
+            ('junior', 'Junior'),
+            ('mid-level', 'Mid-level'),
+            ('senior', 'Senior'),
+        ],
+        blank=True,
+        default=''
+    )
+    skill_score = models.IntegerField(default=0)
+    total_score = models.FloatField(default=0)
+    analysis_status = models.CharField(
+        max_length=20,
+        choices=[
+            ('pending', 'Pending'),
+            ('analyzing', 'Analyzing'),
+            ('completed', 'Completed'),
+            ('failed', 'Failed'),
+        ],
+        default='pending'
+    )
+    
+    class Meta:
+        ordering = ['-uploaded_at']
+    
+    def __str__(self):
+        return f"Resume - {self.original_filename or self.file.name}"
 
 
 # Post Model (Original - kept for reference)
