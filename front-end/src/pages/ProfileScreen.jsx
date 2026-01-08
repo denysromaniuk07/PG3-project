@@ -1,28 +1,30 @@
-import React, { useState } from 'react';
-import { ArrowLeft, Edit, X, Save, Zap, Trophy, CheckCircle, Star, Share2, Github, Briefcase, Mail, MessageSquare, ExternalLink } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ArrowLeft, Edit, X, Save, Zap, Trophy, CheckCircle, Star, Share2, Github, Briefcase, Mail, MessageSquare, ExternalLink, LogOut } from 'lucide-react';
 
 /**
  * ProfileScreen.jsx
- * Enhanced with better spacing and animations
+ * Enhanced with better spacing, animations, and dynamic data.
  */
-const ProfileScreen = ({ goTo, initialProfile }) => {
-  // Use initialProfile from props for the state
+const ProfileScreen = ({ goTo, initialProfile, onUpdateProfile, logout }) => {
   const [edit, setEdit] = useState(false);
-  const [profile, setProfile] = useState(initialProfile || {
-    name: "Alex Developer",
-    title: "Frontend Engineer",
-    location: "Lviv, Ukraine",
-    bio: "Creative developer passionate about React, design systems and cool UI.",
-    github: "https://github.com/example",
-    linkedin: "https://linkedin.com/in/example",
-    email: "alex.dev@example.com",
-    telegram: "https://t.me/example",
-  });
+  // Ensure profile has default values if something is missing
+  const [profile, setProfile] = useState(initialProfile || {});
   const [temp, setTemp] = useState(profile);
+
+  // Sync state if prop changes
+  useEffect(() => {
+    if (initialProfile) {
+      setProfile(initialProfile);
+      setTemp(initialProfile);
+    }
+  }, [initialProfile]);
 
   const save = () => {
     setProfile(temp);
     setEdit(false);
+    if (onUpdateProfile) {
+      onUpdateProfile(temp);
+    }
   };
 
   const skills = [
@@ -52,6 +54,12 @@ const ProfileScreen = ({ goTo, initialProfile }) => {
               <ArrowLeft className="w-4 h-4" /> Back
             </button>
             <button
+              onClick={logout}
+              className="px-4 py-2.5 rounded-xl border-2 border-red-100 bg-red-50 text-red-600 flex items-center gap-2 hover:bg-red-100 hover:border-red-200 transition-all font-semibold"
+            >
+              <LogOut className="w-4 h-4" /> Logout
+            </button>
+            <button
               onClick={() => setEdit(!edit)}
               className="px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl flex items-center gap-2 hover:scale-105 hover:shadow-lg transition-all font-semibold"
             >
@@ -63,79 +71,100 @@ const ProfileScreen = ({ goTo, initialProfile }) => {
 
         {/* Profile Info */}
         <div className="bg-white rounded-3xl p-8 border-2 border-gray-100 shadow-lg mb-8 slide-up">
-          <div className="flex items-center gap-6">
-            <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 text-white flex items-center justify-center text-4xl font-bold shadow-xl hover:scale-110 transition-transform">
-              {profile.name.charAt(0)}
+          <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
+            <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 text-white flex items-center justify-center text-4xl font-bold shadow-xl hover:scale-110 transition-transform flex-shrink-0">
+              {profile.name ? profile.name.charAt(0).toUpperCase() : 'U'}
             </div>
-            <div className="flex-1">
+            <div className="flex-1 w-full">
               {!edit ? (
                 <>
                   <div className="text-3xl font-bold mb-1">{profile.name}</div>
                   <div className="text-base text-gray-500 mb-3">
-                    {profile.title} • {profile.location}
+                    {profile.title || 'No Title'} • {profile.location || 'No Location'}
                   </div>
-                  <p className="mt-3 text-gray-600 leading-relaxed">{profile.bio}</p>
+                  <p className="mt-3 text-gray-600 leading-relaxed">{profile.bio || 'No Bio available.'}</p>
                 </>
               ) : (
                 <div className="space-y-3">
-                  <input
-                    value={temp.name}
-                    onChange={(e) => setTemp({ ...temp, name: e.target.value })}
-                    className="w-full border rounded-lg px-3 py-2"
-                    placeholder="Full name"
-                  />
-                  <input
-                    value={temp.title}
-                    onChange={(e) => setTemp({ ...temp, title: e.target.value })}
-                    className="w-full border rounded-lg px-3 py-2"
-                    placeholder="Job title"
-                  />
-                  <input
-                    value={temp.location}
-                    onChange={(e) => setTemp({ ...temp, location: e.target.value })}
-                    className="w-full border rounded-lg px-3 py-2"
-                    placeholder="Location"
-                  />
-                  <textarea
-                    value={temp.bio}
-                    onChange={(e) => setTemp({ ...temp, bio: e.target.value })}
-                    className="w-full border rounded-lg px-3 py-2"
-                    placeholder="Short bio"
-                  />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                      <input
+                        value={temp.name || ''}
+                        onChange={(e) => setTemp({ ...temp, name: e.target.value })}
+                        className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none"
+                        placeholder="Full name"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Job Title</label>
+                      <input
+                        value={temp.title || ''}
+                        onChange={(e) => setTemp({ ...temp, title: e.target.value })}
+                        className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none"
+                        placeholder="Job title"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                      <input
+                        value={temp.location || ''}
+                        onChange={(e) => setTemp({ ...temp, location: e.target.value })}
+                        className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none"
+                        placeholder="Location"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                      <input
+                        value={temp.email || ''}
+                        onChange={(e) => setTemp({ ...temp, email: e.target.value })}
+                        className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none"
+                        placeholder="Email"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Bio</label>
+                    <textarea
+                      value={temp.bio || ''}
+                      onChange={(e) => setTemp({ ...temp, bio: e.target.value })}
+                      className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none"
+                      placeholder="Short bio"
+                      rows={3}
+                    />
+                  </div>
 
                   {/* Editable Social Links */}
-                  <h3 className="text-lg font-semibold mt-6">Social Links</h3>
-                  <input
-                    value={temp.github}
-                    onChange={(e) => setTemp({ ...temp, github: e.target.value })}
-                    className="w-full border rounded-lg px-3 py-2"
-                    placeholder="GitHub URL"
-                  />
-                  <input
-                    value={temp.linkedin}
-                    onChange={(e) => setTemp({ ...temp, linkedin: e.target.value })}
-                    className="w-full border rounded-lg px-3 py-2"
-                    placeholder="LinkedIn URL"
-                  />
-                  <input
-                    value={temp.email}
-                    onChange={(e) => setTemp({ ...temp, email: e.target.value })}
-                    className="w-full border rounded-lg px-3 py-2"
-                    placeholder="Email"
-                  />
-                  <input
-                    value={temp.telegram}
-                    onChange={(e) => setTemp({ ...temp, telegram: e.target.value })}
-                    className="w-full border rounded-lg px-3 py-2"
-                    placeholder="Telegram link"
-                  />
+                  <h3 className="text-lg font-semibold mt-4">Social Links</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <input
+                      value={temp.github || ''}
+                      onChange={(e) => setTemp({ ...temp, github: e.target.value })}
+                      className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none"
+                      placeholder="GitHub URL"
+                    />
+                    <input
+                      value={temp.linkedin || ''}
+                      onChange={(e) => setTemp({ ...temp, linkedin: e.target.value })}
+                      className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none"
+                      placeholder="LinkedIn URL"
+                    />
+                    <input
+                      value={temp.telegram || ''}
+                      onChange={(e) => setTemp({ ...temp, telegram: e.target.value })}
+                      className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none"
+                      placeholder="Telegram link"
+                    />
+                  </div>
 
                   <div className="flex gap-2 pt-3">
                     <button
                       onClick={save}
                       className="px-4 py-2 bg-indigo-600 text-white rounded-lg flex items-center gap-2 hover:bg-indigo-700 transition"
                     >
-                      <Save className="w-4 h-4" /> Save
+                      <Save className="w-4 h-4" /> Save Changes
                     </button>
                     <button
                       onClick={() => {

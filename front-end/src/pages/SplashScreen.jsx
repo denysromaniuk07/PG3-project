@@ -65,6 +65,12 @@ const SplashScreen = ({ goTo }) => (
           </span>
         </button>
         <button
+          onClick={() => goTo("login")}
+          className="px-8 py-5 glass text-white rounded-2xl font-bold text-lg border-2 border-white/30 hover:bg-white/30 hover:border-white/50 transition-all duration-300"
+        >
+          Login
+        </button>
+        <button
           onClick={() => goTo("dashboard")}
           className="px-8 py-5 glass text-white rounded-2xl font-bold text-lg border-2 border-white/30 hover:bg-white/30 hover:border-white/50 transition-all duration-300"
         >

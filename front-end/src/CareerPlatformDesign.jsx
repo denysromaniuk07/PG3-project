@@ -4,9 +4,11 @@ import { Home, BookOpen, Briefcase, Users, User, ArrowLeft } from "lucide-react"
 
 // Components
 import ScreenNav from "./components/ScreenNav";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 // Screens
 import SplashScreen from "./pages/SplashScreen";
+import LoginPage from "./pages/LoginPage";
 import OnboardingScreen from "./pages/OnboardingScreen";
 import ResumeAnalysisScreen from "./pages/ResumeAnalysisScreen";
 import DashboardScreen from "./pages/DashboardScreen";
@@ -28,22 +30,53 @@ const CareerPlatformDesign = () => {
   const location = useLocation();
 
   // --- Global State ---
+  const [user, setUser] = useState(null); // Auth State
   const [selectedCourse, setSelectedCourse] = useState(null);
-  const [profile] = useState({
-    name: "Alex Johnson",
-    title: "Aspiring Full Stack Developer",
-    location: "Warsaw, Poland",
-    bio: "I build delightful web experiences. Learning everyday.",
-    github: "https://github.com/alexdev",
-    linkedin: "https://linkedin.com/in/alexjohnson",
-    email: "alex.dev@skillpath.ai",
-    telegram: "https://t.me/alex_johnson",
-  });
+
+  // Default values for new profiles
+  const defaultProfile = {
+    name: "New User",
+    title: "Aspiring Developer",
+    location: "Unknown",
+    bio: "Ready to learn!",
+    github: "",
+    linkedin: "",
+    email: "",
+    telegram: "",
+  };
+
+  const [profile, setProfile] = useState(defaultProfile);
   const [achievements] = useState([
     { id: 1, title: "First Project", date: "2025-03-10", icon: ArrowLeft },
     { id: 2, title: "100% Course Completion", date: "2025-07-21", icon: ArrowLeft },
     { id: 3, title: "Streak: 30 days", date: "2025-10-01", icon: ArrowLeft },
   ]);
+
+  // Auth Handlers
+  const handleLogin = (userData) => {
+    setUser(userData);
+    // Update profile with user data if provided (e.g. from registration)
+    if (userData) {
+      setProfile({
+        ...defaultProfile,
+        ...userData,
+        email: userData.email || defaultProfile.email,
+        name: userData.name || defaultProfile.name
+      });
+    }
+    navigate('/dashboard');
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    setProfile(defaultProfile);
+    navigate('/');
+  };
+
+  const handleUpdateProfile = (updatedData) => {
+    setProfile(updatedData);
+    // Optionally connect to backend here
+  };
 
   // Данні для Dashboard/LearningPath
   const learningCourses = [
@@ -67,6 +100,8 @@ const CareerPlatformDesign = () => {
 
     if (screen === 'splash') {
       navigate('/');
+    } else if (screen === 'login') {
+      navigate('/login');
     } else {
       navigate(`/${screen}`);
     }
@@ -81,22 +116,25 @@ const CareerPlatformDesign = () => {
   return (
     <div className="min-h-screen bg-white text-gray-800">
       {/* ScreenNav імпортується як окремий файл */}
-      <ScreenNav activeScreen={activeScreen} goTo={goTo} />
+      <ScreenNav activeScreen={activeScreen} goTo={goTo} user={user} logout={handleLogout} />
 
       {/* screens (також імпортуються як окремі файли) */}
       <Routes>
-        <Route path="/" element={<SplashScreen goTo={goTo} />} />
+        <Route path="/" element={<SplashScreen goTo={goTo} user={user} />} />
         <Route path="/splash" element={<Navigate to="/" replace />} />
-        <Route path="/onboarding" element={<OnboardingScreen goTo={goTo} />} />
-        <Route path="/resume-analysis" element={<ResumeAnalysisScreen goTo={goTo} />} />
-        <Route path="/dashboard" element={<DashboardScreen goTo={goTo} profile={profile} learningCourses={learningCourses} />} />
-        <Route path="/learning-path" element={<LearningPathScreen goTo={goTo} />} />
-        <Route path="/course-detail" element={<CourseDetailScreen goTo={goTo} selectedCourse={selectedCourse} />} />
-        <Route path="/projects" element={<ProjectsScreen goTo={goTo} />} />
-        <Route path="/opportunities" element={<OpportunitiesScreen goTo={goTo} />} />
-        <Route path="/community" element={<CommunityScreen goTo={goTo} />} />
-        <Route path="/profile" element={<ProfileScreen goTo={goTo} initialProfile={profile} />} />
-        <Route path="/achievements" element={<AchievementsScreen goTo={goTo} achievements={achievements} />} />
+        <Route path="/login" element={<LoginPage onLogin={handleLogin} goTo={goTo} />} />
+
+        {/* Protected Routes */}
+        <Route path="/onboarding" element={<ProtectedRoute user={user}><OnboardingScreen goTo={goTo} /></ProtectedRoute>} />
+        <Route path="/resume-analysis" element={<ProtectedRoute user={user}><ResumeAnalysisScreen goTo={goTo} /></ProtectedRoute>} />
+        <Route path="/dashboard" element={<ProtectedRoute user={user}><DashboardScreen goTo={goTo} profile={profile} learningCourses={learningCourses} /></ProtectedRoute>} />
+        <Route path="/learning-path" element={<ProtectedRoute user={user}><LearningPathScreen goTo={goTo} /></ProtectedRoute>} />
+        <Route path="/course-detail" element={<ProtectedRoute user={user}><CourseDetailScreen goTo={goTo} selectedCourse={selectedCourse} /></ProtectedRoute>} />
+        <Route path="/projects" element={<ProtectedRoute user={user}><ProjectsScreen goTo={goTo} /></ProtectedRoute>} />
+        <Route path="/opportunities" element={<ProtectedRoute user={user}><OpportunitiesScreen goTo={goTo} /></ProtectedRoute>} />
+        <Route path="/community" element={<ProtectedRoute user={user}><CommunityScreen goTo={goTo} /></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute user={user}><ProfileScreen goTo={goTo} initialProfile={profile} onUpdateProfile={handleUpdateProfile} logout={handleLogout} /></ProtectedRoute>} />
+        <Route path="/achievements" element={<ProtectedRoute user={user}><AchievementsScreen goTo={goTo} achievements={achievements} /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
 

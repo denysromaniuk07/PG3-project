@@ -178,35 +178,34 @@ const OnboardingScreen = ({ goTo }) => {
             <ArrowRight className="w-5 h-5" />
           </button>
         </div>
-      </div>
-
-      {/* Features */}
-      <div
-        className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6 slide-up"
-        style={{ animationDelay: "0.2s" }}
-      >
-        {[
-          { icon: Zap, title: "AI-Powered", desc: "Smart recommendations" },
-          {
-            icon: Target,
-            title: "Personalized",
-            desc: "Tailored to your goals",
-          },
-          {
-            icon: TrendingUp,
-            title: "Track Progress",
-            desc: "See your growth",
-          },
-        ].map((feature, i) => (
-          <div
-            key={i}
-            className="text-center p-6 bg-white/60 backdrop-blur-sm rounded-2xl border border-gray-200"
-          >
-            <feature.icon className="w-8 h-8 text-indigo-600 mx-auto mb-3" />
-            <h4 className="font-bold text-gray-900 mb-1">{feature.title}</h4>
-            <p className="text-sm text-gray-600">{feature.desc}</p>
-          </div>
-        ))}
+        {/* Features */}
+        <div
+          className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6 slide-up"
+          style={{ animationDelay: "0.2s" }}
+        >
+          {[
+            { icon: Zap, title: "AI-Powered", desc: "Smart recommendations" },
+            {
+              icon: Target,
+              title: "Personalized",
+              desc: "Tailored to your goals",
+            },
+            {
+              icon: TrendingUp,
+              title: "Track Progress",
+              desc: "See your growth",
+            },
+          ].map((feature, i) => (
+            <div
+              key={i}
+              className="text-center p-6 bg-white/60 backdrop-blur-sm rounded-2xl border border-gray-200"
+            >
+              <feature.icon className="w-8 h-8 text-indigo-600 mx-auto mb-3" />
+              <h4 className="font-bold text-gray-900 mb-1">{feature.title}</h4>
+              <p className="text-sm text-gray-600">{feature.desc}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
