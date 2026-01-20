@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import (
     User, Skill, UserSkill, Resume, Course, CourseModule, UserCourseProgress,
     Project, UserProjectProgress, JobOpportunity, JobApplication,
-    CommunityPost, Comment, Mentor, MentorSession, Achievement, UserAchievement
+    CommunityPost, Comment, Mentor, Achievement, UserAchievement
 )
 
 
@@ -89,23 +89,23 @@ class CourseModuleSerializer(serializers.ModelSerializer):
         model = CourseModule
         fields = [
             'id', 'course', 'title', 'description', 'content_type',
-            'order', 'content', 'video_url', 'duration_minutes',
+            'order', 'content', 'video_url', 'duration',
             'created_at', 'updated_at'
         ]
+        read_only_fields = ['id', 'created_at', 'updated_at']
 
 
 class CourseSerializer(serializers.ModelSerializer):
     modules = CourseModuleSerializer(many=True, read_only=True)
-    instructor_name = serializers.CharField(source='instructor.get_full_name', read_only=True)
 
     class Meta:
         model = Course
         fields = [
-            'id', 'title', 'description', 'difficulty', 'category',
-            'duration_hours', 'instructor', 'instructor_name', 'thumbnail',
-            'total_students', 'rating', 'modules', 'created_at', 'updated_at'
+            'id', 'title', 'description', 'difficulty_level', 'category',
+            'estimated_duration', 'color_gradient', 'thumbnail',
+            'modules', 'created_at', 'updated_at'
         ]
-        read_only_fields = ['id', 'total_students', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at']
 
 
 class UserCourseProgressSerializer(serializers.ModelSerializer):
@@ -115,27 +115,23 @@ class UserCourseProgressSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserCourseProgress
         fields = [
-            'id', 'course', 'course_id', 'status', 'progress_percentage',
-            'modules_completed', 'started_at', 'completed_at'
+            'id', 'course', 'course_id', 'progress', 'completed_modules',
+            'started_at', 'completed_at'
         ]
         read_only_fields = ['id', 'started_at']
 
 
 # ==================== PROJECT SERIALIZERS ====================
 class ProjectSerializer(serializers.ModelSerializer):
-    required_skills = SkillSerializer(many=True, read_only=True)
-    required_skill_ids = serializers.PrimaryKeyRelatedField(
-        many=True, write_only=True, queryset=Skill.objects.all(), source='required_skills'
-    )
 
     class Meta:
         model = Project
         fields = [
-            'id', 'title', 'description', 'requirements', 'difficulty',
-            'required_skills', 'required_skill_ids', 'estimated_hours',
-            'total_submissions', 'average_rating', 'created_at', 'updated_at'
+            'id', 'title', 'description', 'category', 'difficulty_level',
+            'icon_emoji', 'color_gradient', 'thumbnail', 'is_locked',
+            'unlock_requirements', 'created_at', 'updated_at'
         ]
-        read_only_fields = ['id', 'total_submissions', 'average_rating', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at']
 
 
 class UserProjectProgressSerializer(serializers.ModelSerializer):
@@ -147,8 +143,7 @@ class UserProjectProgressSerializer(serializers.ModelSerializer):
         model = UserProjectProgress
         fields = [
             'id', 'user', 'project', 'project_id', 'status',
-            'submission_url', 'submission_notes', 'rating', 'feedback',
-            'started_at', 'submitted_at', 'completed_at'
+            'progress', 'submission_url', 'started_at', 'completed_at'
         ]
         read_only_fields = ['id', 'user', 'started_at']
 
@@ -163,19 +158,19 @@ class JobOpportunitySerializer(serializers.ModelSerializer):
     class Meta:
         model = JobOpportunity
         fields = [
-            'id', 'title', 'description', 'company_name', 'company_logo',
-            'location', 'job_type', 'experience_level', 'required_skills',
-            'required_skill_ids', 'salary_min', 'salary_max', 'application_url',
-            'total_applications', 'posted_at', 'deadline'
+            'id', 'job_title', 'description', 'company_name', 'company_logo',
+            'location', 'job_type', 'required_skills',
+            'required_skill_ids', 'salary_min', 'salary_max', 'job_url',
+            'posted_date', 'expires_at'
         ]
-        read_only_fields = ['id', 'total_applications', 'posted_at']
+        read_only_fields = ['id', 'posted_date']
 
 
 class JobApplicationSerializer(serializers.ModelSerializer):
     job = JobOpportunitySerializer(read_only=True)
     job_id = serializers.IntegerField(write_only=True)
     user = UserSerializer(read_only=True)
-    job_title = serializers.CharField(source='job.title', read_only=True)
+    job_title = serializers.CharField(source='job.job_title', read_only=True)
     company_name = serializers.CharField(source='job.company_name', read_only=True)
 
     class Meta:
@@ -189,56 +184,33 @@ class JobApplicationSerializer(serializers.ModelSerializer):
 
 # ==================== COMMUNITY SERIALIZERS ====================
 class CommentSerializer(serializers.ModelSerializer):
-    author = UserSerializer(read_only=True)
+    user = UserSerializer(read_only=True)
 
     class Meta:
         model = Comment
         fields = [
-            'id', 'post', 'author', 'content', 'likes_count',
+            'id', 'post', 'user', 'content',
             'created_at', 'updated_at'
         ]
+        read_only_fields = ['id', 'user', 'created_at', 'updated_at']
         read_only_fields = ['id', 'author', 'likes_count', 'created_at', 'updated_at']
 
 
 class CommunityPostSerializer(serializers.ModelSerializer):
-    author = UserSerializer(read_only=True)
-    comments = CommentSerializer(many=True, read_only=True)
+    user = UserSerializer(read_only=True)
 
     class Meta:
         model = CommunityPost
         fields = [
-            'id', 'author', 'title', 'content', 'tags', 'likes_count',
-            'comments_count', 'comments', 'created_at', 'updated_at'
+            'id', 'user', 'title', 'content', 'likes_count',
+            'comments_count', 'created_at', 'updated_at'
         ]
-        read_only_fields = ['id', 'author', 'likes_count', 'comments_count', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'user', 'likes_count', 'comments_count', 'created_at', 'updated_at']
 
 
 # ==================== MENTOR SERIALIZERS ====================
-class MentorSessionSerializer(serializers.ModelSerializer):
-    mentor = serializers.SerializerMethodField()
-    mentee = UserSerializer(read_only=True)
-
-    class Meta:
-        model = MentorSession
-        fields = [
-            'id', 'mentor', 'mentee', 'title', 'description', 'status',
-            'scheduled_date', 'duration_minutes', 'rating', 'feedback',
-            'requested_at', 'completed_at'
-        ]
-        read_only_fields = ['id', 'mentee', 'requested_at']
-
-    def get_mentor(self, obj):
-        return {
-            'id': obj.mentor.user.id,
-            'username': obj.mentor.user.username,
-            'name': obj.mentor.user.get_full_name(),
-            'hourly_rate': str(obj.mentor.hourly_rate)
-        }
-
-
 class MentorSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
-    sessions = MentorSessionSerializer(many=True, read_only=True)
 
     class Meta:
         model = Mentor

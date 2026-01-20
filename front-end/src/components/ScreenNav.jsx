@@ -1,14 +1,10 @@
 import React, { useState } from "react";
 import { TrendingUp, Bell, Settings, X, Menu } from "lucide-react";
 
-/**
- * ScreenNav.jsx
- * Enhanced top navigation - FIXED: button text overflow
- */
-const ScreenNav = ({ activeScreen, goTo }) => {
+
+const ScreenNav = ({ activeScreen, goTo, user }) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // Shortened labels for better fit
   const navItems = [
     { id: "splash", label: "🌟", fullLabel: "Splash" },
     { id: "onboarding", label: "🚀", fullLabel: "Onboarding" },
@@ -74,12 +70,13 @@ const ScreenNav = ({ activeScreen, goTo }) => {
           </button>
 
           {/* Avatar - Opens Profile */}
+          {/* Avatar - Opens Profile */}
           <div
             onClick={() => goTo("profile")}
             className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-white font-bold shadow-md hover:scale-110 transition-transform cursor-pointer"
             title="My Profile"
           >
-            A
+            {user && user.name ? user.name.charAt(0).toUpperCase() : 'P'}
           </div>
 
           {/* Mobile menu button */}

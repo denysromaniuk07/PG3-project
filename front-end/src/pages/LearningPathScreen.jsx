@@ -1,10 +1,6 @@
 import React from 'react';
 import { BookOpen, Rocket, Clock, ChevronRight, Play, TrendingUp } from 'lucide-react';
 
-/**
- * LearningPathScreen.jsx
- * Enhanced with better spacing and animations
- */
 const LearningPathScreen = ({ goTo }) => (
   <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 pt-32 pb-24 px-6">
     <div className="max-w-6xl mx-auto">

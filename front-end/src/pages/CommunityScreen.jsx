@@ -1,14 +1,10 @@
 import React from 'react';
 import { Users, Star, MessageSquare, Heart, Send, TrendingUp, ArrowLeft } from 'lucide-react';
 
-/**
- * CommunityScreen.jsx
- * Enhanced with better spacing and animations
- */
+
 const CommunityScreen = ({ goTo }) => (
   <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-indigo-50 pt-32 pb-24 px-6">
     <div className="max-w-7xl mx-auto">
-      {/* Header */}
       <div className="text-center mb-16 fade-in">
         <div className="inline-block p-6 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-3xl mb-8 shadow-2xl hover:scale-110 transition-transform">
           <Users className="w-16 h-16 text-white" />
@@ -21,9 +17,7 @@ const CommunityScreen = ({ goTo }) => (
         </p>
       </div>
 
-      {/* Main Content */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 mb-12">
-        {/* Posts Feed */}
         <div className="lg:col-span-2 space-y-6">
           {[
             {
@@ -88,9 +82,7 @@ const CommunityScreen = ({ goTo }) => (
           ))}
         </div>
 
-        {/* Sidebar */}
         <div className="space-y-6">
-          {/* Top Mentors */}
           <div className="bg-white rounded-3xl p-8 shadow-lg border-2 border-gray-100 slide-up" style={{ animationDelay: '0.3s' }}>
             <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
               <Star className="w-6 h-6 text-yellow-500" /> Top Mentors
@@ -120,7 +112,6 @@ const CommunityScreen = ({ goTo }) => (
             ))}
           </div>
 
-          {/* AI Helper */}
           <div className="bg-gradient-to-br from-purple-600 to-indigo-600 text-white p-8 rounded-3xl shadow-2xl slide-up" style={{ animationDelay: '0.4s' }}>
             <h3 className="text-2xl font-bold mb-4 flex items-center gap-2">
               🤖 Ask AI Mentor
@@ -136,7 +127,6 @@ const CommunityScreen = ({ goTo }) => (
             </button>
           </div>
 
-          {/* Trending Topics */}
           <div className="bg-white rounded-3xl p-8 shadow-lg border-2 border-gray-100 slide-up" style={{ animationDelay: '0.5s' }}>
             <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
               <TrendingUp className="w-6 h-6 text-green-500" /> Trending
@@ -150,7 +140,6 @@ const CommunityScreen = ({ goTo }) => (
         </div>
       </div>
 
-      {/* CTA Card */}
       <div className="bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-500 text-white rounded-3xl p-12 shadow-2xl text-center slide-up relative overflow-hidden">
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -right-10 -top-10 w-64 h-64 rounded-full bg-white/10 blur-3xl"></div>

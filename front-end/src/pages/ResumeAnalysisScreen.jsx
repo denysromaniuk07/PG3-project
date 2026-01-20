@@ -1,10 +1,7 @@
 import React from 'react';
 import { Brain, CheckCircle, Sparkles, TrendingUp, Target, Zap, ArrowRight } from 'lucide-react';
 
-/**
- * ResumeAnalysisScreen.jsx
- * Enhanced with better spacing and animations
- */
+
 const ResumeAnalysisScreen = ({ goTo }) => {
   const skills = [
     { name: "JavaScript", level: 85 },

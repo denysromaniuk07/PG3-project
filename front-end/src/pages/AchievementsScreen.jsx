@@ -1,14 +1,10 @@
 import React from 'react';
 import { Trophy, Award, Star, Medal, Target, Zap, ArrowLeft } from 'lucide-react';
 
-/**
- * AchievementsScreen.jsx
- * Enhanced with better spacing and animations
- */
+
 const AchievementsScreen = ({ goTo, achievements }) => (
   <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50 pt-32 pb-24">
     <div className="max-w-6xl mx-auto px-6 lg:px-8">
-      {/* Header */}
       <div className="flex items-center justify-between mb-12 fade-in">
         <div>
           <h1 className="text-5xl md:text-6xl font-black mb-3 gradient-text">
@@ -25,7 +21,6 @@ const AchievementsScreen = ({ goTo, achievements }) => (
         </button>
       </div>
 
-      {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12 slide-up">
         {[
           { label: "Total Achievements", value: achievements?.length || 3, icon: Trophy, color: "from-yellow-400 to-orange-500" },
@@ -47,7 +42,6 @@ const AchievementsScreen = ({ goTo, achievements }) => (
         ))}
       </div>
 
-      {/* Achievements Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 slide-up" style={{ animationDelay: '0.4s' }}>
         {achievements?.map((a, idx) => (
           <div
@@ -65,7 +59,6 @@ const AchievementsScreen = ({ goTo, achievements }) => (
           </div>
         ))}
 
-        {/* Locked Achievement Example */}
         <div className="bg-gray-50 p-8 rounded-3xl border-2 border-dashed border-gray-300 shadow-lg opacity-60">
           <div className="w-16 h-16 rounded-2xl bg-gray-200 flex items-center justify-center mb-5">
             <Target className="w-8 h-8 text-gray-400" />
@@ -75,7 +68,6 @@ const AchievementsScreen = ({ goTo, achievements }) => (
         </div>
       </div>
 
-      {/* CTA Card */}
       <div className="mt-12 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 rounded-3xl p-10 text-white shadow-2xl slide-up relative overflow-hidden" style={{ animationDelay: '0.6s' }}>
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -right-10 -top-10 w-64 h-64 rounded-full bg-white/10 blur-3xl"></div>

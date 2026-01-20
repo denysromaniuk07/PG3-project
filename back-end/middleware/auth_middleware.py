@@ -6,7 +6,7 @@ Handles token validation and user context enrichment.
 import logging
 from django.contrib.auth.models import AnonymousUser
 from django.utils.deprecation import MiddlewareMixin
-from rest_framework_simplejwt.tokens import UnicodeToken
+from rest_framework_simplejwt.tokens import Token
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from api.models import User
 

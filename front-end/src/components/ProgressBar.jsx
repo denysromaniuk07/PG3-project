@@ -1,18 +1,13 @@
 import React from 'react';
 
-/**
- * ProgressBar.jsx
- * Enhanced with smooth animations and shimmer effect
- */
+
 const ProgressBar = ({ value = 0, gradient = "from-indigo-500 to-purple-500", height = "h-3", showPercentage = false }) => (
   <div className="w-full">
     <div className={`w-full bg-gray-200 rounded-full ${height} overflow-hidden relative`}>
-      {/* Progress fill with shimmer */}
       <div
         className={`${height} rounded-full bg-gradient-to-r ${gradient} shimmer transition-all duration-1000 ease-out relative`}
         style={{ width: `${Math.min(100, Math.max(0, value))}%` }}
       >
-        {/* Glow effect */}
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
       </div>
     </div>

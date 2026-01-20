@@ -2,14 +2,10 @@ import React from 'react';
 import { Home, Star, Trophy, Zap, Users, BookOpen, Briefcase, Rocket, MessageSquare, TrendingUp, Award } from 'lucide-react';
 import ProgressBar from '../components/ProgressBar';
 
-/**
- * DashboardScreen.jsx
- * Enhanced with better spacing and animations
- */
+
 const DashboardScreen = ({ goTo, profile, learningCourses }) => (
   <div className="min-h-screen bg-gradient-to-br from-gray-50 via-indigo-50/30 to-purple-50/30 pt-32 pb-24">
     <div className="max-w-7xl mx-auto px-6 lg:px-8">
-      {/* Header Section with Better Spacing */}
       <div className="mb-12 fade-in">
         <h1 className="text-5xl md:text-6xl font-black mb-3 gradient-text">
           Welcome back, {profile.name.split(" ")[0]}! 👋
@@ -35,9 +31,7 @@ const DashboardScreen = ({ goTo, profile, learningCourses }) => (
         ))}
       </div>
 
-      {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Learning Courses Section */}
         <div className="lg:col-span-2 bg-white rounded-3xl p-8 shadow-lg border border-gray-100 slide-up" style={{ animationDelay: '0.4s' }}>
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-2xl font-bold flex items-center gap-2">
@@ -93,7 +87,6 @@ const DashboardScreen = ({ goTo, profile, learningCourses }) => (
           </div>
         </div>
 
-        {/* Quick Actions Sidebar */}
         <div className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100 slide-up" style={{ animationDelay: '0.5s' }}>
           <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
             <Zap className="w-6 h-6 text-yellow-500" />
@@ -123,7 +116,6 @@ const DashboardScreen = ({ goTo, profile, learningCourses }) => (
             </button>
           </div>
 
-          {/* Achievement Preview */}
           <div className="mt-8 p-5 bg-gradient-to-br from-yellow-50 to-orange-50 rounded-2xl border border-yellow-200">
             <div className="flex items-center gap-3 mb-3">
               <Award className="w-6 h-6 text-yellow-600" />
@@ -137,7 +129,6 @@ const DashboardScreen = ({ goTo, profile, learningCourses }) => (
         </div>
       </div>
 
-      {/* New Opportunities Section */}
       <div className="mt-10 bg-white rounded-3xl p-8 shadow-lg border border-gray-100 slide-up" style={{ animationDelay: '0.6s' }}>
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-2xl font-bold flex items-center gap-2">
