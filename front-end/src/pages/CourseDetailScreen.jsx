@@ -1,14 +1,10 @@
 import React from 'react';
 import { Play, BookOpen, FileText, CheckCircle, Clock, ArrowLeft, Award, TrendingUp } from 'lucide-react';
 
-/**
- * CourseDetailScreen.jsx
- * Enhanced with better spacing and animations
- */
+
 const CourseDetailScreen = ({ goTo }) => (
   <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 pt-32 pb-24 px-6">
     <div className="max-w-6xl mx-auto">
-      {/* Header */}
       <div className="mb-12 flex items-center justify-between fade-in">
         <div className="flex items-center gap-5">
           <div className="p-5 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-3xl shadow-2xl hover:scale-110 transition-transform pulse-glow">
@@ -28,7 +24,6 @@ const CourseDetailScreen = ({ goTo }) => (
         </button>
       </div>
 
-      {/* Video Player */}
       <div className="bg-white rounded-3xl shadow-2xl overflow-hidden mb-12 border-2 border-gray-100 slide-up">
         <div className="relative bg-gradient-to-br from-gray-900 to-gray-800 aspect-video flex items-center justify-center group">
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/60"></div>
@@ -96,7 +91,6 @@ const CourseDetailScreen = ({ goTo }) => (
         </div>
       </div>
 
-      {/* CTA Card */}
       <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 text-white rounded-3xl p-12 shadow-2xl slide-up relative overflow-hidden">
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -right-10 -top-10 w-64 h-64 rounded-full bg-white/10 blur-3xl"></div>

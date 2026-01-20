@@ -12,14 +12,14 @@ from datetime import timedelta
 from .models import (
     User, Skill, UserSkill, Resume, Course, CourseModule, UserCourseProgress,
     Project, UserProjectProgress, JobOpportunity, JobApplication,
-    CommunityPost, Comment, Mentor, MentorSession, Achievement, UserAchievement
+    CommunityPost, Comment, Mentor, Achievement, UserAchievement
 )
 from .serializers import (
     UserSerializer, SkillSerializer, UserSkillSerializer, ResumeSerializer,
     CourseSerializer, CourseModuleSerializer, UserCourseProgressSerializer,
     ProjectSerializer, UserProjectProgressSerializer, JobOpportunitySerializer,
     JobApplicationSerializer, CommunityPostSerializer, CommentSerializer,
-    MentorSerializer, MentorSessionSerializer, AchievementSerializer,
+    MentorSerializer, AchievementSerializer,
     UserAchievementSerializer
 )
 from .permissions import IsOwner, IsMentor, IsAuthorOrReadOnly
@@ -207,7 +207,7 @@ class CourseViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_class = CourseFilter
     search_fields = ['title', 'description', 'category']
-    ordering_fields = ['created_at', 'rating', 'duration_hours']
+    ordering_fields = ['created_at', 'estimated_duration']
     ordering = ['-created_at']
 
     @action(detail=True, methods=['get'])
@@ -225,11 +225,8 @@ class CourseViewSet(viewsets.ModelViewSet):
         progress, created = UserCourseProgress.objects.get_or_create(
             user=request.user,
             course=course,
-            defaults={'status': 'in_progress'}
+            defaults={'progress': 0}
         )
-        if created:
-            course.total_students += 1
-            course.save()
         serializer = UserCourseProgressSerializer(progress)
         return Response(serializer.data, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
 
@@ -269,12 +266,11 @@ class UserCourseProgressViewSet(viewsets.ModelViewSet):
         module_id = request.data.get('module_id')
         
         module = get_object_or_404(CourseModule, id=module_id, course=progress.course)
-        progress.modules_completed += 1
+        progress.completed_modules += 1
         total_modules = progress.course.modules.count()
-        progress.progress_percentage = int((progress.modules_completed / total_modules) * 100)
+        progress.progress = int((progress.completed_modules / total_modules) * 100)
         
-        if progress.progress_percentage >= 100:
-            progress.status = 'completed'
+        if progress.progress >= 100:
             progress.completed_at = timezone.now()
         
         progress.save()
@@ -290,9 +286,9 @@ class ProjectViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
     pagination_class = StandardPagination
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['difficulty']
+    filterset_fields = ['difficulty_level']
     search_fields = ['title', 'description']
-    ordering_fields = ['created_at', 'average_rating']
+    ordering_fields = ['created_at']
 
     @action(detail=True, methods=['post'])
     def start(self, request, pk=None):
@@ -312,8 +308,8 @@ class ProjectViewSet(viewsets.ModelViewSet):
         project = self.get_object()
         submissions = UserProjectProgress.objects.filter(
             project=project,
-            status__in=['submitted', 'completed']
-        ).order_by('-rating')[:50]
+            status__in=['in_progress', 'completed']
+        ).order_by('-progress')[:50]
         serializer = UserProjectProgressSerializer(submissions, many=True)
         return Response(serializer.data)
 
@@ -330,10 +326,9 @@ class UserProjectProgressViewSet(viewsets.ModelViewSet):
     def submit(self, request, pk=None):
         """Submit project for review"""
         progress = self.get_object()
-        progress.status = 'submitted'
-        progress.submitted_at = timezone.now()
+        progress.status = 'completed'
+        progress.completed_at = timezone.now()
         progress.submission_url = request.data.get('submission_url', progress.submission_url)
-        progress.submission_notes = request.data.get('submission_notes', progress.submission_notes)
         progress.save()
         serializer = self.get_serializer(progress)
         return Response(serializer.data)
@@ -342,14 +337,14 @@ class UserProjectProgressViewSet(viewsets.ModelViewSet):
 # ==================== JOB OPPORTUNITIES ====================
 class JobOpportunityViewSet(viewsets.ModelViewSet):
     """Job listings with skill matching"""
-    queryset = JobOpportunity.objects.filter(deadline__gte=timezone.now()).order_by('-posted_at')
+    queryset = JobOpportunity.objects.filter(expires_at__gte=timezone.now()).order_by('-posted_date')
     serializer_class = JobOpportunitySerializer
     permission_classes = [AllowAny]
     pagination_class = StandardPagination
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_class = JobOpportunityFilter
-    search_fields = ['title', 'company_name', 'description', 'location']
-    ordering_fields = ['posted_at', 'salary_min', 'salary_max']
+    search_fields = ['job_title', 'company_name', 'description', 'location']
+    ordering_fields = ['posted_date', 'salary_min', 'salary_max']
 
     @action(detail=True, methods=['post'])
     def apply(self, request, pk=None):
@@ -360,9 +355,6 @@ class JobOpportunityViewSet(viewsets.ModelViewSet):
             job=job,
             defaults={'cover_letter': request.data.get('cover_letter', '')}
         )
-        if created:
-            job.total_applications += 1
-            job.save()
         serializer = JobApplicationSerializer(application)
         return Response(serializer.data, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
 
@@ -373,8 +365,8 @@ class JobOpportunityViewSet(viewsets.ModelViewSet):
         user_skill_ids = user.skills.values_list('skill_id', flat=True)
         matching_jobs = JobOpportunity.objects.filter(
             required_skills__in=user_skill_ids,
-            deadline__gte=timezone.now()
-        ).distinct().order_by('-posted_at')[:20]
+            expires_at__gte=timezone.now()
+        ).distinct().order_by('-posted_date')[:20]
         serializer = self.get_serializer(matching_jobs, many=True)
         return Response(serializer.data)
 
@@ -407,7 +399,7 @@ class CommunityPostViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
     pagination_class = StandardPagination
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ['title', 'content', 'tags']
+    search_fields = ['title', 'content']
     ordering_fields = ['created_at', 'likes_count', 'comments_count']
     ordering = ['-created_at']
 
@@ -421,7 +413,7 @@ class CommunityPostViewSet(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        serializer.save(user=self.request.user)
 
     @action(detail=True, methods=['post'])
     def like(self, request, pk=None):
@@ -473,7 +465,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         post_id = self.request.data.get('post')
         post = get_object_or_404(CommunityPost, id=post_id)
-        comment = serializer.save(author=self.request.user, post=post)
+        comment = serializer.save(user=self.request.user, post=post)
         post.comments_count += 1
         post.save()
 
@@ -493,47 +485,9 @@ class MentorViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['get'])
     def reviews(self, request, pk=None):
-        """Get mentor reviews/sessions"""
-        mentor = self.get_object()
-        sessions = mentor.sessions.filter(status='completed').order_by('-completed_at')
-        serializer = MentorSessionSerializer(sessions, many=True)
-        return Response(serializer.data)
-
-
-class MentorSessionViewSet(viewsets.ModelViewSet):
-    """Mentoring sessions"""
-    serializer_class = MentorSessionSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        if self.request.user.is_mentor:
-            return MentorSession.objects.filter(mentor__user=self.request.user)
-        return MentorSession.objects.filter(mentee=self.request.user)
-
-    def perform_create(self, serializer):
-        serializer.save(mentee=self.request.user)
-
-    @action(detail=True, methods=['post'])
-    def schedule(self, request, pk=None):
-        """Schedule a mentoring session"""
-        session = self.get_object()
-        session.status = 'scheduled'
-        session.scheduled_date = request.data.get('scheduled_date')
-        session.save()
-        serializer = self.get_serializer(session)
-        return Response(serializer.data)
-
-    @action(detail=True, methods=['post'])
-    def complete(self, request, pk=None):
-        """Complete a mentoring session"""
-        session = self.get_object()
-        session.status = 'completed'
-        session.completed_at = timezone.now()
-        session.rating = request.data.get('rating')
-        session.feedback = request.data.get('feedback')
-        session.save()
-        serializer = self.get_serializer(session)
-        return Response(serializer.data)
+        """Get mentor reviews"""
+        # TODO: Implement mentor reviews once MentorSession is implemented
+        return Response([])
 
 
 # ==================== ACHIEVEMENTS ====================

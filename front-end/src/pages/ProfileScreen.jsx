@@ -1,6 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Edit, X, Save, Zap, Trophy, CheckCircle, Star, Share2, Github, Briefcase, Mail, MessageSquare, ExternalLink, LogOut } from 'lucide-react';
-
+import React, { useState, useEffect } from "react";
+import {
+  ArrowLeft,
+  Edit,
+  X,
+  Save,
+  Zap,
+  Trophy,
+  CheckCircle,
+  Star,
+  Share2,
+  Github,
+  Briefcase,
+  Mail,
+  MessageSquare,
+  ExternalLink,
+  LogOut,
+} from "lucide-react";
+import { useUserInfoStore } from "../store";
 /**
  * ProfileScreen.jsx
  * Enhanced with better spacing, animations, and dynamic data.
@@ -10,7 +26,7 @@ const ProfileScreen = ({ goTo, initialProfile, onUpdateProfile, logout }) => {
   // Ensure profile has default values if something is missing
   const [profile, setProfile] = useState(initialProfile || {});
   const [temp, setTemp] = useState(profile);
-
+  const { username, email } = useUserInfoStore((state) => state);
   // Sync state if prop changes
   useEffect(() => {
     if (initialProfile) {
@@ -35,9 +51,18 @@ const ProfileScreen = ({ goTo, initialProfile, onUpdateProfile, logout }) => {
   ];
 
   const achievements = [
-    { title: "Top Performer 2025", icon: <Trophy className="w-5 h-5 text-yellow-500" /> },
-    { title: "100+ Projects Completed", icon: <CheckCircle className="w-5 h-5 text-green-500" /> },
-    { title: "5 Years Experience", icon: <Star className="w-5 h-5 text-indigo-500" /> },
+    {
+      title: "Top Performer 2025",
+      icon: <Trophy className="w-5 h-5 text-yellow-500" />,
+    },
+    {
+      title: "100+ Projects Completed",
+      icon: <CheckCircle className="w-5 h-5 text-green-500" />,
+    },
+    {
+      title: "5 Years Experience",
+      icon: <Star className="w-5 h-5 text-indigo-500" />,
+    },
   ];
 
   return (
@@ -45,7 +70,9 @@ const ProfileScreen = ({ goTo, initialProfile, onUpdateProfile, logout }) => {
       <div className="max-w-5xl mx-auto px-6 lg:px-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8 fade-in">
-          <h1 className="text-4xl md:text-5xl font-black gradient-text">Profile</h1>
+          <h1 className="text-4xl md:text-5xl font-black gradient-text">
+            Profile
+          </h1>
           <div className="flex items-center gap-3">
             <button
               onClick={() => goTo("dashboard")}
@@ -73,52 +100,71 @@ const ProfileScreen = ({ goTo, initialProfile, onUpdateProfile, logout }) => {
         <div className="bg-white rounded-3xl p-8 border-2 border-gray-100 shadow-lg mb-8 slide-up">
           <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
             <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 text-white flex items-center justify-center text-4xl font-bold shadow-xl hover:scale-110 transition-transform flex-shrink-0">
-              {profile.name ? profile.name.charAt(0).toUpperCase() : 'U'}
+              {profile.name ? profile.name.charAt(0).toUpperCase() : "U"}
             </div>
             <div className="flex-1 w-full">
               {!edit ? (
                 <>
                   <div className="text-3xl font-bold mb-1">{profile.name}</div>
                   <div className="text-base text-gray-500 mb-3">
-                    {profile.title || 'No Title'} • {profile.location || 'No Location'}
+                    {profile.title || "No Title"} •{" "}
+                    {profile.location || "No Location"}
                   </div>
-                  <p className="mt-3 text-gray-600 leading-relaxed">{profile.bio || 'No Bio available.'}</p>
+                  <p className="mt-3 text-gray-600 leading-relaxed">
+                    {profile.bio || "No Bio available."}
+                  </p>
                 </>
               ) : (
                 <div className="space-y-3">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Full Name
+                      </label>
                       <input
-                        value={temp.name || ''}
-                        onChange={(e) => setTemp({ ...temp, name: e.target.value })}
+                        value={temp.name || ""}
+                        onChange={(e) =>
+                          setTemp({ ...temp, name: e.target.value })
+                        }
                         className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none"
                         placeholder="Full name"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Job Title</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Job Title
+                      </label>
                       <input
-                        value={temp.title || ''}
-                        onChange={(e) => setTemp({ ...temp, title: e.target.value })}
+                        value={temp.title || ""}
+                        onChange={(e) =>
+                          setTemp({ ...temp, title: e.target.value })
+                        }
                         className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none"
                         placeholder="Job title"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Location
+                      </label>
                       <input
-                        value={temp.location || ''}
-                        onChange={(e) => setTemp({ ...temp, location: e.target.value })}
+                        value={temp.location || ""}
+                        onChange={(e) =>
+                          setTemp({ ...temp, location: e.target.value })
+                        }
                         className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none"
                         placeholder="Location"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Email
+                      </label>
                       <input
-                        value={temp.email || ''}
-                        onChange={(e) => setTemp({ ...temp, email: e.target.value })}
+                        value={temp.email || ""}
+                        onChange={(e) =>
+                          setTemp({ ...temp, email: e.target.value })
+                        }
                         className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none"
                         placeholder="Email"
                       />
@@ -126,10 +172,14 @@ const ProfileScreen = ({ goTo, initialProfile, onUpdateProfile, logout }) => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Bio</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Bio
+                    </label>
                     <textarea
-                      value={temp.bio || ''}
-                      onChange={(e) => setTemp({ ...temp, bio: e.target.value })}
+                      value={temp.bio || ""}
+                      onChange={(e) =>
+                        setTemp({ ...temp, bio: e.target.value })
+                      }
                       className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none"
                       placeholder="Short bio"
                       rows={3}
@@ -140,20 +190,26 @@ const ProfileScreen = ({ goTo, initialProfile, onUpdateProfile, logout }) => {
                   <h3 className="text-lg font-semibold mt-4">Social Links</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <input
-                      value={temp.github || ''}
-                      onChange={(e) => setTemp({ ...temp, github: e.target.value })}
+                      value={temp.github || ""}
+                      onChange={(e) =>
+                        setTemp({ ...temp, github: e.target.value })
+                      }
                       className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none"
                       placeholder="GitHub URL"
                     />
                     <input
-                      value={temp.linkedin || ''}
-                      onChange={(e) => setTemp({ ...temp, linkedin: e.target.value })}
+                      value={temp.linkedin || ""}
+                      onChange={(e) =>
+                        setTemp({ ...temp, linkedin: e.target.value })
+                      }
                       className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none"
                       placeholder="LinkedIn URL"
                     />
                     <input
-                      value={temp.telegram || ''}
-                      onChange={(e) => setTemp({ ...temp, telegram: e.target.value })}
+                      value={temp.telegram || ""}
+                      onChange={(e) =>
+                        setTemp({ ...temp, telegram: e.target.value })
+                      }
                       className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none"
                       placeholder="Telegram link"
                     />
@@ -226,29 +282,48 @@ const ProfileScreen = ({ goTo, initialProfile, onUpdateProfile, logout }) => {
         {/* Social & Contact Links */}
         <div className="bg-white rounded-2xl p-6 border shadow-sm">
           <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-            <Share2 className="w-5 h-5 text-indigo-600" /> Social & Contact Links
+            <Share2 className="w-5 h-5 text-indigo-600" /> Social & Contact
+            Links
           </h2>
           <div className="grid sm:grid-cols-2 gap-4">
             {profile.github && (
-              <a href={profile.github} target="_blank" rel="noopener noreferrer" className="p-4 border rounded-xl flex items-center gap-3 hover:shadow-md transition">
+              <a
+                href={profile.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-4 border rounded-xl flex items-center gap-3 hover:shadow-md transition"
+              >
                 <Github className="w-5 h-5 text-gray-700" /> GitHub
                 <ExternalLink className="w-4 h-4 ml-auto text-gray-400" />
               </a>
             )}
             {profile.linkedin && (
-              <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" className="p-4 border rounded-xl flex items-center gap-3 hover:shadow-md transition">
+              <a
+                href={profile.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-4 border rounded-xl flex items-center gap-3 hover:shadow-md transition"
+              >
                 <Briefcase className="w-5 h-5 text-blue-600" /> LinkedIn
                 <ExternalLink className="w-4 h-4 ml-auto text-gray-400" />
               </a>
             )}
             {profile.email && (
-              <a href={`mailto:${profile.email}`} className="p-4 border rounded-xl flex items-center gap-3 hover:shadow-md transition">
+              <a
+                href={`mailto:${profile.email}`}
+                className="p-4 border rounded-xl flex items-center gap-3 hover:shadow-md transition"
+              >
                 <Mail className="w-5 h-5 text-red-500" /> {profile.email}
                 <ExternalLink className="w-4 h-4 ml-auto text-gray-400" />
               </a>
             )}
             {profile.telegram && (
-              <a href={profile.telegram} target="_blank" rel="noopener noreferrer" className="p-4 border rounded-xl flex items-center gap-3 hover:shadow-md transition">
+              <a
+                href={profile.telegram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-4 border rounded-xl flex items-center gap-3 hover:shadow-md transition"
+              >
                 <MessageSquare className="w-5 h-5 text-sky-500" /> Telegram
                 <ExternalLink className="w-4 h-4 ml-auto text-gray-400" />
               </a>

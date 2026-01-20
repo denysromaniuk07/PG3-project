@@ -1,14 +1,10 @@
 import React from 'react';
 import { Briefcase, Search, MapPin, TrendingUp, Filter, ArrowLeft } from 'lucide-react';
 
-/**
- * OpportunitiesScreen.jsx
- * Enhanced with better spacing and animations
- */
+
 const OpportunitiesScreen = ({ goTo }) => (
   <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 pt-32 pb-24 px-6">
     <div className="max-w-7xl mx-auto">
-      {/* Header */}
       <div className="text-center mb-16 fade-in">
         <div className="inline-block p-6 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-3xl mb-8 shadow-2xl hover:scale-110 transition-transform">
           <Briefcase className="w-16 h-16 text-white" />
@@ -21,7 +17,6 @@ const OpportunitiesScreen = ({ goTo }) => (
         </p>
       </div>
 
-      {/* Search Bar */}
       <div className="bg-white rounded-2xl shadow-lg border-2 border-gray-100 p-6 mb-12 slide-up flex items-center gap-4">
         <Search className="w-6 h-6 text-gray-400" />
         <input
@@ -35,7 +30,6 @@ const OpportunitiesScreen = ({ goTo }) => (
         </button>
       </div>
 
-      {/* Jobs Grid */}
       <div className="bg-white rounded-3xl shadow-2xl border-2 border-gray-100 p-10 mb-12 slide-up" style={{ animationDelay: '0.2s' }}>
         <h2 className="text-3xl font-bold text-gray-900 mb-8 flex items-center gap-3">
           <TrendingUp className="w-7 h-7 text-green-500" />
@@ -132,7 +126,6 @@ const OpportunitiesScreen = ({ goTo }) => (
         </div>
       </div>
 
-      {/* CTA Card */}
       <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white rounded-3xl p-12 shadow-2xl slide-up relative overflow-hidden">
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -right-10 -top-10 w-64 h-64 rounded-full bg-white/10 blur-3xl"></div>

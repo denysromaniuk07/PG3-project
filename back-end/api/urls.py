@@ -34,7 +34,6 @@ router.register(r'community/comments', views.CommentViewSet, basename='comment')
 
 # Mentorship
 router.register(r'mentors', views.MentorViewSet, basename='mentor')
-router.register(r'mentor-sessions', views.MentorSessionViewSet, basename='mentor-session')
 
 # Achievements
 router.register(r'achievements', views.AchievementViewSet, basename='achievement')

@@ -1,14 +1,9 @@
 import React from 'react';
 import { Briefcase, Lock, CheckCircle, Rocket, Code, Database, Brain } from 'lucide-react';
 
-/**
- * ProjectsScreen.jsx
- * Enhanced with better spacing and animations
- */
 const ProjectsScreen = ({ goTo }) => (
   <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 pt-32 pb-24 px-6">
     <div className="max-w-7xl mx-auto">
-      {/* Header */}
       <div className="text-center mb-16 fade-in">
         <div className="inline-block p-6 bg-gradient-to-br from-purple-600 to-pink-600 rounded-3xl mb-8 shadow-2xl hover:scale-110 transition-transform pulse-glow">
           <Rocket className="w-16 h-16 text-white" />
@@ -21,7 +16,6 @@ const ProjectsScreen = ({ goTo }) => (
         </p>
       </div>
 
-      {/* Projects Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
         {[
           {
@@ -125,7 +119,6 @@ const ProjectsScreen = ({ goTo }) => (
         ))}
       </div>
 
-      {/* CTA Card */}
       <div className="bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 text-white rounded-3xl p-12 shadow-2xl text-center slide-up relative overflow-hidden">
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -right-10 -top-10 w-64 h-64 rounded-full bg-white/10 blur-3xl"></div>

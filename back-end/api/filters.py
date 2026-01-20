@@ -5,26 +5,32 @@ from .models import JobOpportunity, Course, Mentor
 class JobOpportunityFilter(filters.FilterSet):
     """Filter for job opportunities"""
     location = filters.CharFilter(lookup_expr='icontains')
-    job_type = filters.ChoiceFilter(choices=JobOpportunity.JOB_TYPE_CHOICES)
-    experience_level = filters.ChoiceFilter(choices=JobOpportunity.EXPERIENCE_LEVEL_CHOICES)
+    job_type = filters.ChoiceFilter(
+        choices=[
+            ('full_time', 'Full Time'),
+            ('part_time', 'Part Time'),
+            ('contract', 'Contract'),
+            ('freelance', 'Freelance'),
+        ]
+    )
     salary_min = filters.NumberFilter(field_name='salary_min', lookup_expr='gte')
     salary_max = filters.NumberFilter(field_name='salary_max', lookup_expr='lte')
 
     class Meta:
         model = JobOpportunity
-        fields = ['location', 'job_type', 'experience_level', 'salary_min', 'salary_max']
+        fields = ['location', 'job_type', 'salary_min', 'salary_max']
 
 
 class CourseFilter(filters.FilterSet):
     """Filter for courses"""
-    difficulty = filters.ChoiceFilter(choices=Course.DIFFICULTY_CHOICES)
+    difficulty = filters.ChoiceFilter(field_name='difficulty_level', choices=Course.DIFFICULTY_CHOICES)
     category = filters.CharFilter(lookup_expr='icontains')
-    duration_min = filters.NumberFilter(field_name='duration_hours', lookup_expr='gte')
-    duration_max = filters.NumberFilter(field_name='duration_hours', lookup_expr='lte')
+    duration_min = filters.NumberFilter(field_name='estimated_duration', lookup_expr='gte')
+    duration_max = filters.NumberFilter(field_name='estimated_duration', lookup_expr='lte')
 
     class Meta:
         model = Course
-        fields = ['difficulty', 'category']
+        fields = ['difficulty_level', 'category']
 
 
 class MentorFilter(filters.FilterSet):

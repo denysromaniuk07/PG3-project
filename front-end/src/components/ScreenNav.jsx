@@ -1,14 +1,10 @@
 import React, { useState } from "react";
 import { TrendingUp, Bell, Settings, X, Menu } from "lucide-react";
 
-/**
- * ScreenNav.jsx
- * Enhanced top navigation - FIXED: button text overflow
- */
+
 const ScreenNav = ({ activeScreen, goTo, user }) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // Shortened labels for better fit
   const navItems = [
     { id: "splash", label: "🌟", fullLabel: "Splash" },
     { id: "onboarding", label: "🚀", fullLabel: "Onboarding" },

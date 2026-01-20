@@ -8,15 +8,13 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { useRef } from "react";
-/**
- * OnboardingScreen.jsx
- * Enhanced with better spacing and animations
- */
+
 const OnboardingScreen = ({ goTo }) => {
   const inputRef = useRef(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
 
   const openExplorer = () => {
     inputRef.current.click();
@@ -26,6 +24,17 @@ const OnboardingScreen = ({ goTo }) => {
     const file = e.target.files[0];
     if (!file) return;
 
+    // Validate file type
+    const allowedExtensions = ["pdf", "doc", "docx"];
+    const fileExtension = file.name.split(".").pop().toLowerCase();
+    if (!allowedExtensions.includes(fileExtension)) {
+      setError(
+        `Only ${allowedExtensions.join(", ").toUpperCase()} files are allowed`,
+      );
+      return;
+    }
+
+    // Validate file size (5MB max)
     if (file.size > 5 * 1024 * 1024) {
       setError("File is too large (max 5MB)");
       return;
@@ -33,33 +42,38 @@ const OnboardingScreen = ({ goTo }) => {
 
     setLoading(true);
     setError(null);
+    setSuccess(null);
     setSelectedFile(null);
 
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const res = await fetch("http://localhost:8000/api/upload/", {
-        method: "POST",
-        body: formData,
-        credentials: "include",
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || "Upload failed");
+      // Get token from localStorage
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("No authentication token found. Please login first.");
       }
 
-      setSelectedFile(data.resume);
-      alert(
-        `✅ ${data.message}\n\nFile: ${data.resume.original_filename}\nSize: ${(
-          data.resume.file_size / 1024
-        ).toFixed(2)} KB`
-      );
+      const formData = new FormData();
+      formData.append("cv", file);
+
+      const response = await fetch("http://127.0.0.1:8000/api/onboarding/cv/", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "CV upload failed");
+      }
+
+      setSelectedFile(data.data);
+      setSuccess(`✅ ${data.message}\n\nFile uploaded successfully!`);
     } catch (err) {
       setError(err.message || "An error occurred during upload");
-      alert(`❌ Error: ${err.message}`);
+      console.error("Upload error:", err);
     } finally {
       setLoading(false);
     }
@@ -67,7 +81,6 @@ const OnboardingScreen = ({ goTo }) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 flex items-center justify-center p-6 pt-32 pb-12">
       <div className="max-w-5xl w-full">
-        {/* Header */}
         <div className="text-center mb-12 fade-in">
           <div className="inline-block p-6 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-3xl mb-6 shadow-2xl hover:scale-110 transition-transform pulse-glow">
             <Sparkles className="w-14 h-14 text-white" />
@@ -84,85 +97,103 @@ const OnboardingScreen = ({ goTo }) => {
             ref={inputRef}
             className="hidden"
             onChange={onFileChange}
+            accept=".pdf,.doc,.docx"
           />
         </div>
 
-        {/* Main Card */}
-
         <div className="bg-white rounded-3xl p-10 shadow-2xl border-2 border-gray-100 slide-up">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Upload Option */}
             <div className="border-2 border-dashed border-indigo-300 rounded-2xl p-8 text-center cursor-pointer hover:border-indigo-500 hover:bg-indigo-50/50 transition-all group">
-              <button onClick={openExplorer}>
+              <button
+                onClick={openExplorer}
+                disabled={loading}
+                className="w-full disabled:opacity-50"
+              >
                 <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
                   <Upload className="w-10 h-10 text-indigo-600" />
                 </div>
               </button>
               <h3 className="font-bold text-2xl mb-2 text-gray-900">
-                Upload Resume
+                Upload CV/Resume
               </h3>
-              <p className="text-sm text-gray-500 mb-4">PDF, DOCX • Max 5MB</p>
+              <p className="text-sm text-gray-500 mb-4">
+                PDF, DOC, DOCX • Max 5MB
+              </p>
               <div className="inline-block px-4 py-2 bg-indigo-100 text-indigo-600 rounded-lg text-sm font-semibold">
                 {loading ? "Uploading..." : "Click to browse"}
               </div>
               {selectedFile && (
-                <div className="mt-4 p-3 bg-green-50 border-2 border-green-300 rounded-lg">
+                <div className="mt-4 p-4 bg-green-50 border-2 border-green-300 rounded-lg">
                   <p className="text-green-700 font-semibold text-sm">
-                    ✅ Uploaded:
+                    ✅ Successfully Uploaded
                   </p>
-                  <p className="text-green-600 text-xs mt-1">
-                    {selectedFile.original_filename}
+                  <p className="text-green-600 text-xs mt-2 break-words">
+                    {selectedFile.cv ? (
+                      <>
+                        <strong>File:</strong>{" "}
+                        {selectedFile.cv.split("/").pop()}
+                      </>
+                    ) : (
+                      "Resume saved to your profile"
+                    )}
                   </p>
                 </div>
               )}
-              {error && (
-                <div className="mt-4 p-3 bg-red-50 border-2 border-red-300 rounded-lg">
-                  <p className="text-red-700 font-semibold text-sm">
-                    ❌ Error:
+              {success && (
+                <div className="mt-4 p-4 bg-blue-50 border-2 border-blue-300 rounded-lg">
+                  <p className="text-blue-700 font-semibold text-sm">
+                    {success}
                   </p>
-                  <p className="text-red-600 text-xs mt-1">{error}</p>
                 </div>
               )}
             </div>
           </div>
 
-          {/* Quick Questions Option */}
-          <div className="rounded-2xl p-8 bg-gradient-to-br from-gray-50 to-indigo-50 border-2 border-gray-200">
+          <div className="mt-8 rounded-2xl p-8 bg-gradient-to-br from-gray-50 to-indigo-50 border-2 border-gray-200">
             <h3 className="font-bold text-2xl mb-3 text-gray-900 flex items-center gap-2">
               <Target className="w-6 h-6 text-indigo-600" />
-              Quick Questions
+              About You
             </h3>
             <p className="text-sm text-gray-600 mb-6">
-              We'll customize your learning path based on experience & goals
+              We'll customize your learning path based on your experience &
+              goals
             </p>
             <div className="grid grid-cols-1 gap-4">
               <div className="border-2 border-gray-200 rounded-xl p-4 bg-white hover:border-indigo-300 transition-all">
-                <div className="text-sm font-semibold text-gray-700 mb-1">
+                <div className="text-sm font-semibold text-gray-700 mb-2">
                   🎯 Career Goal
                 </div>
-                <div className="text-gray-900 font-medium">
-                  Full Stack Developer
-                </div>
+                <input
+                  type="text"
+                  placeholder="e.g., Full Stack Developer"
+                  className="w-full text-gray-900 font-medium bg-transparent focus:outline-none"
+                />
               </div>
               <div className="border-2 border-gray-200 rounded-xl p-4 bg-white hover:border-indigo-300 transition-all">
-                <div className="text-sm font-semibold text-gray-700 mb-1">
+                <div className="text-sm font-semibold text-gray-700 mb-2">
                   ⚡ Experience Level
                 </div>
-                <div className="text-gray-900 font-medium">Intermediate</div>
+                <select className="w-full text-gray-900 font-medium bg-transparent focus:outline-none">
+                  <option>Beginner</option>
+                  <option>Intermediate</option>
+                  <option>Advanced</option>
+                </select>
               </div>
               <div className="border-2 border-gray-200 rounded-xl p-4 bg-white hover:border-indigo-300 transition-all">
-                <div className="text-sm font-semibold text-gray-700 mb-1">
-                  📚 Preferred Learning
+                <div className="text-sm font-semibold text-gray-700 mb-2">
+                  📚 Preferred Learning Style
                 </div>
-                <div className="text-gray-900 font-medium">
-                  Hands-on Projects
-                </div>
+                <select className="w-full text-gray-900 font-medium bg-transparent focus:outline-none">
+                  <option>Hands-on Projects</option>
+                  <option>Video Courses</option>
+                  <option>Reading & Documentation</option>
+                  <option>Mix of All</option>
+                </select>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Action Buttons */}
         <div className="mt-10 flex flex-col sm:flex-row justify-end gap-4">
           <button
             onClick={() => goTo("splash")}
@@ -172,13 +203,13 @@ const OnboardingScreen = ({ goTo }) => {
           </button>
           <button
             onClick={() => goTo("resume-analysis")}
-            className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-bold text-lg hover:scale-105 hover:shadow-xl transition-all flex items-center justify-center gap-2"
+            disabled={loading}
+            className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-bold text-lg hover:scale-105 hover:shadow-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50"
           >
-            Analyze & Build Path
+            {selectedFile ? "Continue" : "Analyze & Build Path"}
             <ArrowRight className="w-5 h-5" />
           </button>
         </div>
-        {/* Features */}
         <div
           className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6 slide-up"
           style={{ animationDelay: "0.2s" }}
