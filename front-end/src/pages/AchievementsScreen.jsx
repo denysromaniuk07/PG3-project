@@ -1,4 +1,3 @@
-import React from 'react';
 import { Trophy, Award, Star, Medal, Target, Zap, ArrowLeft } from 'lucide-react';
 
 

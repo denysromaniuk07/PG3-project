@@ -1,4 +1,3 @@
-import React from 'react';
 import { BookOpen, Rocket, Clock, ChevronRight, Play, TrendingUp } from 'lucide-react';
 
 const LearningPathScreen = ({ goTo }) => (

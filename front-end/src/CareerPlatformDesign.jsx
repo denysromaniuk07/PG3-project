@@ -17,6 +17,7 @@ import {
 import { useUserInfoStore } from "./store";
 import ScreenNav from "./components/ScreenNav";
 import ProtectedRoute from "./components/ProtectedRoute";
+import UserDebugInfo from "./components/UserDebugInfo";
 
 import SplashScreen from "./pages/SplashScreen";
 import LoginPage from "./pages/LoginPage";
@@ -34,8 +35,7 @@ import AchievementsScreen from "./pages/AchievementsScreen";
 const CareerPlatformDesign = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { email, username } = useUserInfoStore((state) => state);
-  const [user, setUser] = useState(null);
+  const { user, email, username, isAuthenticated, logout: storeLogout } = useUserInfoStore((state) => state);
   const [selectedCourse, setSelectedCourse] = useState(null);
 
   const defaultProfile = {
@@ -62,20 +62,20 @@ const CareerPlatformDesign = () => {
   ]);
 
   const handleLogin = (userData) => {
-    setUser(userData);
+    // User data is already stored in Zustand store by LoginPage
     if (userData) {
       setProfile({
         ...defaultProfile,
         ...userData,
         email: userData.email || defaultProfile.email,
-        name: userData.name || defaultProfile.name,
+        name: userData.username || userData.name || defaultProfile.name,
       });
     }
     navigate("/dashboard");
   };
 
   const handleLogout = () => {
-    setUser(null);
+    storeLogout();
     setProfile(defaultProfile);
     navigate("/");
   };
@@ -243,7 +243,6 @@ const CareerPlatformDesign = () => {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
 
-      {/* bottom nav for small screens - ENHANCED */}
       <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t-2 border-gray-200 p-4 shadow-2xl md:hidden z-40">
         <div className="max-w-4xl mx-auto flex justify-around">
           {[
@@ -256,16 +255,14 @@ const CareerPlatformDesign = () => {
             <button
               key={i}
               onClick={() => goTo(it.screen)}
-              className={`flex flex-col items-center text-xs font-semibold transition-all ${
-                activeScreen === it.screen
-                  ? "text-indigo-600 scale-110"
-                  : "text-gray-600 hover:text-indigo-500 hover:scale-105"
-              }`}
+              className={`flex flex-col items-center text-xs font-semibold transition-all ${activeScreen === it.screen
+                ? "text-indigo-600 scale-110"
+                : "text-gray-600 hover:text-indigo-500 hover:scale-105"
+                }`}
             >
               <div
-                className={`w-7 h-7 mb-1 transition-all ${
-                  activeScreen === it.screen ? "text-indigo-600" : ""
-                }`}
+                className={`w-7 h-7 mb-1 transition-all ${activeScreen === it.screen ? "text-indigo-600" : ""
+                  }`}
               >
                 {it.icon}
               </div>
@@ -274,6 +271,8 @@ const CareerPlatformDesign = () => {
           ))}
         </div>
       </div>
+
+
     </div>
   );
 };

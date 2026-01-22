@@ -1,11 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Mail, Lock, User, ArrowRight, Loader } from "lucide-react";
 import { useUserInfoStore } from "../store";
 
 const LoginPage = ({ goTo, onLogin }) => {
-  const { email, name, setUserName, setUserEmail } = useUserInfoStore(
-    (state) => state,
-  );
+  const { login: storeLogin, access: accessToken } = useUserInfoStore((state) => state);
+
   const [isRegistering, setIsRegistering] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -17,7 +16,7 @@ const LoginPage = ({ goTo, onLogin }) => {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setError(""); // Clear error when user types
+    setError("");
   };
 
   const register = async (e) => {
@@ -44,10 +43,11 @@ const LoginPage = ({ goTo, onLogin }) => {
       }
 
       const data = await response.json();
-      setUserEmail(data.user.email);
-      setUserName(data.user.username);
-      localStorage.setItem("token", data.access);
-      localStorage.setItem("refresh", data.refresh);
+
+      storeLogin(data.user, {
+        access: data.access,
+        refresh: data.refresh,
+      });
 
       setTimeout(() => {
         setIsLoading(false);
@@ -71,7 +71,7 @@ const LoginPage = ({ goTo, onLogin }) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          username: formData.email, // The backend expects username, but you're sending email
+          username: formData.email,
           password: formData.password,
         }),
       });
@@ -82,10 +82,11 @@ const LoginPage = ({ goTo, onLogin }) => {
       }
 
       const data = await response.json();
-      setUserEmail(data.user.email);
-      setUserName(data.user.username);
-      localStorage.setItem("token", data.access);
-      localStorage.setItem("refresh", data.refresh);
+
+      storeLogin(data.user, {
+        access: data.access,
+        refresh: data.refresh,
+      });
 
       setTimeout(() => {
         setIsLoading(false);

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Briefcase, Search, MapPin, TrendingUp, Filter, ArrowLeft } from 'lucide-react';
 
 

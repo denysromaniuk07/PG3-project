@@ -1,4 +1,3 @@
-import React from 'react';
 import { Play, BookOpen, FileText, CheckCircle, Clock, ArrowLeft, Award, TrendingUp } from 'lucide-react';
 
 
@@ -61,8 +60,8 @@ const CourseDetailScreen = ({ goTo }) => (
                 <div
                   key={i}
                   className={`flex items-center justify-between p-6 border-2 rounded-2xl transition-all cursor-pointer group ${mod.completed
-                      ? 'border-green-200 bg-green-50 hover:shadow-lg'
-                      : 'border-gray-200 hover:border-indigo-300 hover:shadow-xl'
+                    ? 'border-green-200 bg-green-50 hover:shadow-lg'
+                    : 'border-gray-200 hover:border-indigo-300 hover:shadow-xl'
                     }`}
                 >
                   <div className="flex items-center gap-4">
@@ -78,8 +77,8 @@ const CourseDetailScreen = ({ goTo }) => (
                   </div>
                   <button
                     className={`px-6 py-3 rounded-xl font-bold text-sm transition-all ${mod.completed
-                        ? 'bg-green-600 text-white cursor-default'
-                        : 'bg-indigo-600 text-white hover:bg-indigo-700 hover:scale-105'
+                      ? 'bg-green-600 text-white cursor-default'
+                      : 'bg-indigo-600 text-white hover:bg-indigo-700 hover:scale-105'
                       }`}
                   >
                     {mod.completed ? '✓ Done' : 'Start →'}

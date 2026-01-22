@@ -12,7 +12,17 @@ class LoginView(APIView):
     def post(self, request):
         username = request.data.get("username")
         password = request.data.get("password")
+        
+        # Try to authenticate with username first
         user = authenticate(username=username, password=password)
+        
+        # If authentication fails, try to find user by email and authenticate
+        if not user:
+            try:
+                user_obj = User.objects.get(email=username)
+                user = authenticate(username=user_obj.username, password=password)
+            except User.DoesNotExist:
+                pass
 
         if not user:
             return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Home, Star, Trophy, Zap, Users, BookOpen, Briefcase, Rocket, MessageSquare, TrendingUp, Award } from 'lucide-react';
 import ProgressBar from '../components/ProgressBar';
 
